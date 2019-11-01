@@ -1,0 +1,197 @@
+.bgi {
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
+button {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+a {
+  color: $black;
+  &:hover {
+    text-decoration: none;
+    color: $black;
+  }
+}
+
+.btn-link:focus, .btn-link.focus, .btn-link:hover {
+  text-decoration: none;
+}
+
+.bold {
+  font-family: 'GilroyBolder', Helvetica, Arial, sans-serif;
+  font-weight: 600;
+}
+
+.no-wrap {
+  white-space: nowrap;
+}
+
+.br {
+  border-radius: .25rem;
+}
+.outline-none, * {
+  outline: none;
+}
+
+hr {
+  border-top: 1px solid $gray-400;
+  width: 100%;
+  height: 1px;
+}
+
+// цвета текста и беграунда
+.text-light-gray {
+  color: $gray-500;
+}
+
+.btn-link {
+  color: $gray-500;
+  line-height: 20px !important;
+  padding: 1px 10px !important;
+  &:hover, &.select {
+    color: $orange;
+  }
+}
+
+.badge-warning{
+  background-color: $orange;
+  color: $white;
+}
+
+.bg-orange {
+  background: $orange;
+}
+.bg-white {
+  background: $white;
+}
+.text-blue {
+  color: $blue;
+}
+
+.ellipsis {
+  display: block;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.notify {
+  padding: 5px;
+  min-width: 29px;
+  display: inline-block;
+  border-radius: 100%;
+}
+
+.bg-light-gray {
+  background: $gray-200;
+}
+
+.text-orange {
+  color: $orange;
+}
+
+.text-black {
+  color: $black;
+}
+
+.text-gray {
+  color: $gray-500;
+}
+
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.overflow-hidden {
+  overflow: hidden;
+}
+
+.d-block {
+  display: block;
+}
+
+.d-none {
+  display: none;
+}
+
+.posr {
+  position: relative;
+}
+
+.posf {
+  position: fixed;
+}
+
+.posa {
+  position: absolute;
+}
+
+.b-none {
+  border: none;
+}
+
+.pointer,
+.pointer > * {
+  cursor: pointer;
+}
+
+.rotate-90 {
+  transform: rotate(-90deg);
+}
+
+.float-right {
+  float: right;
+}
+
+.spacer {
+  flex-grow: 1;
+}
+
+.bg-none {
+  background: none;
+}
+
+.b-l-none {
+  border-left: none;
+}
+
+.form-control {
+  outline: none !important;
+  &:focus {
+    outline: none !important;
+    border: 1px solid $gray-400;
+    border-left: none !important;
+    box-shadow: none;
+  }
+}
+
+@media all and(max-width: 992px){
+  .hidden-md-down {
+    display: none !important;
+  }
+
+  .show-md-down {
+    display: block !important;
+  }
+
+}
+
+@media all and(max-width: 768px){
+  .hidden-sm-down {
+    display: none !important;
+  }
+  .show-sm-down {
+    display: block !important;
+  }
+
+}
+

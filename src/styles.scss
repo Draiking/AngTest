@@ -1,4 +1,15 @@
-/* You can add global styles to this file, and also import other style files */
+@import "styles/color";
+@import "styles/helpers/margin";
+@import "styles/helpers/helpers";
+@import "styles/helpers/font-size-line-height";
+@import "styles/helpers/padding";
+@import "styles/helpers/placeholders";
+
+@import "~bootstrap/scss/bootstrap";
+@import "~ag-grid-community/dist/styles/ag-grid.css";
+@import "~ag-grid-community/dist/styles/ag-theme-balham.css";
+
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
