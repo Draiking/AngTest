@@ -1,9 +1,9 @@
 import {AfterViewInit, Component, OnInit} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
 import {TableRowInterface} from '../interface/tableRow.interface';
 import {MatDialog} from '@angular/material/dialog';
 import {DetailModalComponent} from '../detail-modal/detail-modal.component';
 import * as _ from 'lodash';
+import {TableService} from '../service/table.service';
 
 @Component({
     selector: 'app-table',
@@ -29,13 +29,13 @@ export class TableComponent implements OnInit, AfterViewInit {
 
 
     constructor(
-        private http: HttpClient,
+        private tableservice: TableService,
         public dialog: MatDialog
     ) {
     }
 
     async ngOnInit() {
-        this.rowData = await this.http.get('https://api.myjson.com/bins/15psn9').toPromise();
+        this.rowData = await this.tableservice.getTable();
         let i = 1;
         for (const item of this.rowData) {
             item.action = 'изменить';
@@ -73,7 +73,7 @@ export class TableComponent implements OnInit, AfterViewInit {
                 {headerName: 'price', field: 'price', sortable: true, filter: true, editable: true, width: this.columnWidth(20)},
                 {
                     headerName: 'action', field: 'action', cellRenderer: (params) => {
-                        return `<img src="./assets/goods_crossing_item_edit.gif"> ${params.value}`;
+                        return `<i class="material-icons">create</i> ${params.value}`;
                     }, width: this.columnWidth(12)
                 },
                 {
