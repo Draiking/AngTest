@@ -20,7 +20,7 @@ export class DetailComponent implements OnInit {
         private dataService: DataService
     ) {
         this.id = this.activateRoute.snapshot.params.id;
-        console.log(this.id);
+
     }
 
     ngOnInit() {

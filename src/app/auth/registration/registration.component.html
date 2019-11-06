@@ -1,0 +1,28 @@
+<div class="wrapper">
+  <div class="card mb-4">
+    <div class="card-header ">
+      <h4 class="modal-title">Welcome</h4>
+    </div>
+    <div class="card-body">
+      <div class="login mb-1">
+        <mat-form-field class="w-100">
+          <input matInput placeholder="Введитите email"  type="email" [(ngModel)]="login">
+        </mat-form-field>
+      </div>
+      <div class="password">
+        <mat-form-field class="w-100">
+          <input matInput placeholder="Введитите пароль" type="password" #pas  [(ngModel)]="password">
+        </mat-form-field>
+      </div>
+      <div class="password">
+        <mat-form-field class="w-100">
+          <input matInput placeholder="Введитите пароль" type="password"  pattern="{{pas.value}}" [(ngModel)]="passwordCurrent">
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="card-footer">
+      <button class="btn btn-primary w-100 mb-1" (click)="createUser()">Зарегистрировать</button>
+      <button class="btn btn-danger w-100" [routerLink]="['/auth/login']">Авторизироваться</button>
+    </div>
+  </div>
+</div>

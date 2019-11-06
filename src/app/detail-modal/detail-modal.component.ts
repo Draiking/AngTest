@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 
 @Component({
@@ -12,7 +12,7 @@ export class DetailModalComponent{
         public dialogRef: MatDialogRef<DetailModalComponent>,
         @Inject(MAT_DIALOG_DATA) public data: any)
     {
-        console.log(this.data);
+
     }
 
 

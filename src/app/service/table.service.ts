@@ -1,16 +1,22 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {TableRowInterface} from '../interface/tableRow.interface';
+import {environment} from '../../environments/environment';
+
 
 @Injectable({
     providedIn: 'root'
 })
 export class TableService {
 
-    constructor(private http: HttpClient) {
+    constructor(
+        private http: HttpClient
+    ) {
     }
 
-    getTable() {
-        return this.http.get('https://api.myjson.com/bins/15psn9').toPromise();
+    getTable(): Observable<TableRowInterface> {
+        return this.http.get<TableRowInterface>(environment.url);
     }
 
 }

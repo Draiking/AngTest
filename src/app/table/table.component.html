@@ -1,4 +1,4 @@
-
+<app-header></app-header>
 <div id="container">
   <ng-container *ngIf="columnDefs">
     <ag-grid-angular
@@ -7,9 +7,11 @@
             [rowData]="rowData"
             [columnDefs]="columnDefs"
             [pagination]="true"
+            [components]="components"
             [paginationAutoPageSize]="true"
             (gridReady)="onGridReady($event)"
             (cellClicked)="onCellClicked($event)"
+            (cellEditingStopped)="onEditingStop($event)"
     >
     </ag-grid-angular>
     <ng-container *ngIf="current">
@@ -29,7 +31,7 @@
         <div class="col-xl-3">
           <mat-form-field class="w-100" appearance="outline">
             <mat-label>price</mat-label>
-            <input matInput [(ngModel)]="current.price">
+            <input matInput type="number" [(ngModel)]="current.price">
           </mat-form-field>
         </div>
         <div class="col-xl-3">

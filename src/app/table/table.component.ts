@@ -4,6 +4,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {DetailModalComponent} from '../detail-modal/detail-modal.component';
 import * as _ from 'lodash';
 import {TableService} from '../service/table.service';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
     selector: 'app-table',
@@ -12,6 +13,8 @@ import {TableService} from '../service/table.service';
 })
 export class TableComponent implements OnInit, AfterViewInit {
 
+    oldData: TableRowInterface;
+
     HTMLData: string;
     theHtmlString: string;
 
@@ -19,6 +22,8 @@ export class TableComponent implements OnInit, AfterViewInit {
     gridApi: any;
     gridColumnApi: any;
     current: TableRowInterface;
+
+    private components;
 
 
     rowData: any = [
@@ -30,21 +35,30 @@ export class TableComponent implements OnInit, AfterViewInit {
 
     constructor(
         private tableservice: TableService,
-        public dialog: MatDialog
+        public dialog: MatDialog,
+        private route: ActivatedRoute,
+        private router: Router
     ) {
+        console.log(this.route.snapshot.queryParams);
+
     }
 
-    async ngOnInit() {
-        this.rowData = await this.tableservice.getTable();
-        let i = 1;
-        for (const item of this.rowData) {
-            item.action = 'изменить';
-            item.delete = 'удалить';
-            item.modal = 'показать';
-            item.id = i;
-            i++;
-        }
-        console.log(this.rowData);
+    ngOnInit() {
+        this.tableservice.getTable().subscribe((res) => {
+            this.rowData = res;
+            let i = 1;
+            for (const item of this.rowData) {
+                item.id = i;
+                i++;
+            }
+
+            if (this.route.snapshot.queryParams.id) {
+                const data = this.rowData[this.route.snapshot.queryParams.id];
+                this.openDialog(data);
+                console.log(data);
+            }
+        });
+
     }
 
     columnWidth(percentage) {
@@ -70,10 +84,19 @@ export class TableComponent implements OnInit, AfterViewInit {
                     width: this.columnWidth(30)
                 },
                 {headerName: 'model', field: 'model', sortable: true, filter: true, editable: true, width: this.columnWidth(20)},
-                {headerName: 'price', field: 'price', sortable: true, filter: true, editable: true, width: this.columnWidth(20)},
+                {
+                    headerName: 'price',
+                    field: 'price',
+                    type: 'number',
+                    cellEditor: 'numericCellEditor',
+                    sortable: true,
+                    filter: true,
+                    editable: true,
+                    width: this.columnWidth(20)
+                },
                 {
                     headerName: 'action', field: 'action', cellRenderer: (params) => {
-                        return `<i class="material-icons">create</i> ${params.value}`;
+                        return `<i class="material-icons">create</i>`;
                     }, width: this.columnWidth(12)
                 },
                 {
@@ -88,15 +111,23 @@ export class TableComponent implements OnInit, AfterViewInit {
                 },
             ];
         }, 100);
+        this.components = {numericCellEditor: this.getNumericCellEditor()};
     }
 
     onCellClicked(event) {
+        this.oldData = _.cloneDeep(event.data);
+
         if (event.colDef.field === 'action') {
             this.current = event.data;
+            this.oldData = _.cloneDeep(event.data);
+
             console.log(event.data);
         }
 
         if (event.colDef.field === 'modal') {
+            this.router.navigate(['/table'], {
+                queryParams: {id: event.data.id}
+            });
             this.openDialog(event.data);
         }
 
@@ -106,10 +137,30 @@ export class TableComponent implements OnInit, AfterViewInit {
 
     }
 
-    saveTable() {
-        _.each(this.current, (prop, index) => {
-            this.current[index] = prop.toString().replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '');
+    onEditingStop(event) {
 
+        _.each(event.data, (prop, index) => {
+            if (prop.toString().length === 0) {
+                event.data[index] = this.oldData[index];
+            } else {
+                event.data[index] = prop.toString().replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '');
+            }
+        });
+        this.refreshTable();
+        this.gridApi.stopEditing();
+        this.current = undefined;
+        this.oldData = undefined;
+        console.log(event)
+    }
+
+    saveTable() {
+
+        _.each(this.current, (prop, index) => {
+            if (prop.toString().length === 0) {
+                this.current[index] = this.oldData[index];
+            } else {
+                this.current[index] = prop.toString().replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '');
+            }
         });
         for (let item of this.rowData) {
             if (item.id === this.current.id) {
@@ -118,6 +169,7 @@ export class TableComponent implements OnInit, AfterViewInit {
         }
         this.refreshTable();
         this.current = undefined;
+        this.oldData = undefined;
         console.log(this.current);
     }
 
@@ -126,6 +178,7 @@ export class TableComponent implements OnInit, AfterViewInit {
         this.gridColumnApi = params.columnApi;
 
     }
+
 
     refreshTable() {
         const params = {force: true};
@@ -153,5 +206,71 @@ export class TableComponent implements OnInit, AfterViewInit {
     addHTML() {
         this.theHtmlString = this.HTMLData;
     }
+
+    /*написание только цифр в цене*/
+    getNumericCellEditor() {
+        function isCharNumeric(charStr) {
+            return !!/\d/.test(charStr);
+        }
+
+        function isKeyPressedNumeric(event) {
+            const charCode = getCharCodeFromEvent(event);
+            const charStr = String.fromCharCode(charCode);
+            return isCharNumeric(charStr);
+        }
+
+        function getCharCodeFromEvent(event) {
+            event = event || window.event;
+            return typeof event.which === 'undefined' ? event.keyCode : event.which;
+        }
+
+        function NumericCellEditor() {
+        }
+
+        NumericCellEditor.prototype.init = function(params) {
+            this.focusAfterAttached = params.cellStartedEdit;
+            this.eInput = document.createElement('input');
+            this.eInput.style.width = '100%';
+            this.eInput.style.height = '100%';
+            this.eInput.value = isCharNumeric(params.charPress) ? params.charPress : params.value;
+            const that = this;
+            this.eInput.addEventListener('keypress', (event) => {
+                if (!isKeyPressedNumeric(event)) {
+                    that.eInput.focus();
+                    if (event.preventDefault) {
+                        event.preventDefault();
+                    }
+                }
+            });
+        };
+        NumericCellEditor.prototype.getGui = function() {
+            return this.eInput;
+        };
+        NumericCellEditor.prototype.afterGuiAttached = function() {
+            if (this.focusAfterAttached) {
+                this.eInput.focus();
+                this.eInput.select();
+            }
+        };
+        NumericCellEditor.prototype.isCancelBeforeStart = function() {
+            return this.cancelBeforeStart;
+        };
+        NumericCellEditor.prototype.isCancelAfterEnd = () => {
+        };
+        NumericCellEditor.prototype.getValue = function() {
+            return this.eInput.value;
+        };
+        NumericCellEditor.prototype.focusIn = function() {
+            const eInput = this.getGui();
+            eInput.focus();
+            eInput.select();
+            console.log('NumericCellEditor.focusIn()');
+        };
+        NumericCellEditor.prototype.focusOut = () => {
+            console.log('NumericCellEditor.focusOut()');
+        };
+        return NumericCellEditor;
+    }
+
 
 }

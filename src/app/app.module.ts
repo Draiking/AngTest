@@ -46,6 +46,7 @@ import {MenuItemComponent} from './menu-item/menu-item.component';
         FormsModule,
         MatToolbarModule,
         MatMenuModule,
+
     ],
     providers: [],
     bootstrap: [AppComponent],

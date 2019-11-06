@@ -7,6 +7,14 @@ import {DetailComponent} from './detail/detail.component';
 const routes: Routes = [
   {
     path: '',
+    pathMatch: 'full', redirectTo: 'auth'
+  },
+  {
+    path: 'auth',
+    loadChildren: './auth/auth.module#AuthModule'
+  },
+  {
+    path: 'table',
     component: TableComponent
   },
   {
