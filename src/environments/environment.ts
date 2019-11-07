@@ -4,7 +4,7 @@
 
 export const environment = {
     production: false,
-    url: 'https://api.myjson.com/bins/15psn9'
+    url: 'https://api.myjson.com/'
 };
 
 /*

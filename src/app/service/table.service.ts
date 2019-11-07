@@ -10,13 +10,16 @@ import {environment} from '../../environments/environment';
 })
 export class TableService {
 
+
     constructor(
         private http: HttpClient
     ) {
     }
 
     getTable(): Observable<TableRowInterface> {
-        return this.http.get<TableRowInterface>(environment.url);
+        return this.http.get<TableRowInterface>(`${environment.url}bins/15psn9`);
     }
+
+
 
 }

@@ -1,17 +1,23 @@
-import {AfterViewInit, Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, OnDestroy, OnInit} from '@angular/core';
 import {TableRowInterface} from '../interface/tableRow.interface';
 import {MatDialog} from '@angular/material/dialog';
 import {DetailModalComponent} from '../detail-modal/detail-modal.component';
 import * as _ from 'lodash';
 import {TableService} from '../service/table.service';
 import {ActivatedRoute, Router} from '@angular/router';
+import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
+import {ErrorMessageComponent} from '../error-message/error-message.component';
+import {DataService} from '../data.service';
 
 @Component({
     selector: 'app-table',
     templateUrl: './table.component.html',
     styleUrls: ['./table.component.scss']
 })
-export class TableComponent implements OnInit, AfterViewInit {
+export class TableComponent implements OnInit, AfterViewInit, OnDestroy {
+
+    unsubscribeAll = new Subject();
 
     oldData: TableRowInterface;
 
@@ -21,43 +27,48 @@ export class TableComponent implements OnInit, AfterViewInit {
     columnDefs: any;
     gridApi: any;
     gridColumnApi: any;
+    currentID: number;
+
     current: TableRowInterface;
 
     private components;
 
 
-    rowData: any = [
-        {make: 'Toyota', model: 'Celica', price: 35000},
-        {make: 'Ford', model: 'Mondeo', price: 32000},
-        {make: 'Porsche', model: 'Boxter', price: 72000}
-    ];
+    rowData: any = [];
 
 
     constructor(
         private tableservice: TableService,
         public dialog: MatDialog,
         private route: ActivatedRoute,
-        private router: Router
+        private router: Router,
+        private dataservice: DataService
     ) {
         console.log(this.route.snapshot.queryParams);
 
     }
 
     ngOnInit() {
-        this.tableservice.getTable().subscribe((res) => {
-            this.rowData = res;
-            let i = 1;
-            for (const item of this.rowData) {
-                item.id = i;
-                i++;
-            }
-
-            if (this.route.snapshot.queryParams.id) {
-                const data = this.rowData[this.route.snapshot.queryParams.id];
-                this.openDialog(data);
-                console.log(data);
-            }
-        });
+        this.tableservice.getTable()
+            .pipe(takeUntil(this.unsubscribeAll))
+            .subscribe((res) => {
+                    this.rowData = res;
+                    let i = 1;
+                    for (const item of this.rowData) {
+                        item.id = i;
+                        i++;
+                    }
+                    this.dataservice.setMyCars(this.rowData);
+                    if (this.route.snapshot.queryParams.id) {
+                        const data = this.rowData[this.route.snapshot.queryParams.id];
+                        this.openDialog(data);
+                        console.log(data);
+                    }
+                },
+                (error => {
+                    this.showError('Ошибка получения данных');
+                    console.log(error);
+                }));
 
     }
 
@@ -150,7 +161,7 @@ export class TableComponent implements OnInit, AfterViewInit {
         this.gridApi.stopEditing();
         this.current = undefined;
         this.oldData = undefined;
-        console.log(event)
+        console.log(event);
     }
 
     saveTable() {
@@ -186,9 +197,21 @@ export class TableComponent implements OnInit, AfterViewInit {
     }
 
     openDialog(data: TableRowInterface): void {
+        this.currentID = data.id;
         const dialogRef = this.dialog.open(DetailModalComponent, {
             width: '600px',
             data: {table: data}
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            console.log('The dialog was closed');
+        });
+    }
+
+    showError(messageText: string) {
+        const dialogRef = this.dialog.open(ErrorMessageComponent, {
+            width: '320px',
+            data: {message: messageText}
         });
 
         dialogRef.afterClosed().subscribe(result => {
@@ -272,5 +295,10 @@ export class TableComponent implements OnInit, AfterViewInit {
         return NumericCellEditor;
     }
 
+
+    ngOnDestroy() {
+        this.unsubscribeAll.next();
+        this.unsubscribeAll.complete();
+    }
 
 }

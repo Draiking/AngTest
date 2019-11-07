@@ -19,7 +19,7 @@ export class DetailComponent implements OnInit {
         private activateRoute: ActivatedRoute,
         private dataService: DataService
     ) {
-        this.id = this.activateRoute.snapshot.params.id;
+        this.id = +this.activateRoute.snapshot.params.id;
 
     }
 

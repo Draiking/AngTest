@@ -1,25 +1,30 @@
 import {Injectable} from '@angular/core';
 import {TableRowInterface} from './interface/tableRow.interface';
+import * as _ from 'lodash';
 
 @Injectable({
     providedIn: 'root'
 })
 export class DataService {
 
+
+
     constructor() {
     }
 
-
-    getDataById(id): Promise<TableRowInterface> {
+    /*эмуляция получние деталей по id*/
+    getDataById(id: number): Promise<TableRowInterface> {
         return new Promise((resolve) => {
-            const data: TableRowInterface = {
-                make: 'ford',
-                model: 'focus',
-                price: 35000,
-                id: 1
-            };
-            resolve (data);
+            const myCars = JSON.parse(localStorage.getItem('myCars'));
+            const data = _.find(myCars, (car) => {
+                return car.id === id;
+            });
+            resolve(data);
         });
+    }
+
+    setMyCars(myCars) {
+        localStorage.setItem('myCars', JSON.stringify(myCars));
     }
 
 

@@ -18,9 +18,10 @@ import {
     MatToolbarModule
 } from '@angular/material';
 import {FormsModule} from '@angular/forms';
-import { DetailModalComponent } from './detail-modal/detail-modal.component';
-import { DetailComponent } from './detail/detail.component';
+import {DetailModalComponent} from './detail-modal/detail-modal.component';
+import {DetailComponent} from './detail/detail.component';
 import {MenuItemComponent} from './menu-item/menu-item.component';
+import {ErrorMessageComponent} from './error-message/error-message.component';
 
 
 @NgModule({
@@ -31,6 +32,7 @@ import {MenuItemComponent} from './menu-item/menu-item.component';
         DetailModalComponent,
         DetailComponent,
         MenuItemComponent,
+        ErrorMessageComponent,
     ],
     imports: [
         BrowserModule,
@@ -50,7 +52,10 @@ import {MenuItemComponent} from './menu-item/menu-item.component';
     ],
     providers: [],
     bootstrap: [AppComponent],
-    entryComponents: [DetailModalComponent]
+    entryComponents: [
+        DetailModalComponent,
+        ErrorMessageComponent
+    ]
 })
 export class AppModule {
 }
