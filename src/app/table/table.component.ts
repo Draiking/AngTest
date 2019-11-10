@@ -1,14 +1,13 @@
 import {AfterViewInit, Component, OnDestroy, OnInit} from '@angular/core';
 import {TableRowInterface} from '../interface/tableRow.interface';
 import {MatDialog} from '@angular/material/dialog';
-import {DetailModalComponent} from '../detail-modal/detail-modal.component';
 import * as _ from 'lodash';
-import {TableService} from '../service/table.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
-import {ErrorMessageComponent} from '../error-message/error-message.component';
-import {DataService} from '../data.service';
+import {DataService} from '../service/data.service';
+import {MymodalcomponentComponent} from '../mymodalcomponent/mymodalcomponent.component';
+
 
 @Component({
     selector: 'app-table',
@@ -18,27 +17,18 @@ import {DataService} from '../data.service';
 export class TableComponent implements OnInit, AfterViewInit, OnDestroy {
 
     unsubscribeAll = new Subject();
-
     oldData: TableRowInterface;
-
     HTMLData: string;
     theHtmlString: string;
-
     columnDefs: any;
     gridApi: any;
     gridColumnApi: any;
-    currentID: number;
-
+    currentID = 1;
     current: TableRowInterface;
-
-    private components;
-
-
     rowData: any = [];
 
 
     constructor(
-        private tableservice: TableService,
         public dialog: MatDialog,
         private route: ActivatedRoute,
         private router: Router,
@@ -49,7 +39,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.tableservice.getTable()
+        this.dataservice.getTable()
             .pipe(takeUntil(this.unsubscribeAll))
             .subscribe((res) => {
                     this.rowData = res;
@@ -99,7 +89,6 @@ export class TableComponent implements OnInit, AfterViewInit, OnDestroy {
                     headerName: 'price',
                     field: 'price',
                     type: 'number',
-                    cellEditor: 'numericCellEditor',
                     sortable: true,
                     filter: true,
                     editable: true,
@@ -122,7 +111,6 @@ export class TableComponent implements OnInit, AfterViewInit, OnDestroy {
                 },
             ];
         }, 100);
-        this.components = {numericCellEditor: this.getNumericCellEditor()};
     }
 
     onCellClicked(event) {
@@ -149,14 +137,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     onEditingStop(event) {
-
-        _.each(event.data, (prop, index) => {
-            if (prop.toString().length === 0) {
-                event.data[index] = this.oldData[index];
-            } else {
-                event.data[index] = prop.toString().replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '');
-            }
-        });
+        this.validationAndUpdateField(event.data);
         this.refreshTable();
         this.gridApi.stopEditing();
         this.current = undefined;
@@ -166,13 +147,8 @@ export class TableComponent implements OnInit, AfterViewInit, OnDestroy {
 
     saveTable() {
 
-        _.each(this.current, (prop, index) => {
-            if (prop.toString().length === 0) {
-                this.current[index] = this.oldData[index];
-            } else {
-                this.current[index] = prop.toString().replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '');
-            }
-        });
+        this.validationAndUpdateField(this.current);
+
         for (let item of this.rowData) {
             if (item.id === this.current.id) {
                 item = this.current;
@@ -198,20 +174,21 @@ export class TableComponent implements OnInit, AfterViewInit, OnDestroy {
 
     openDialog(data: TableRowInterface): void {
         this.currentID = data.id;
-        const dialogRef = this.dialog.open(DetailModalComponent, {
+        const dialogRef = this.dialog.open(MymodalcomponentComponent, {
             width: '600px',
-            data: {table: data}
+            data: {data, isMessage: false}
         });
 
         dialogRef.afterClosed().subscribe(result => {
+            this.router.navigate(['/table']);
             console.log('The dialog was closed');
         });
     }
 
     showError(messageText: string) {
-        const dialogRef = this.dialog.open(ErrorMessageComponent, {
+        const dialogRef = this.dialog.open(MymodalcomponentComponent, {
             width: '320px',
-            data: {message: messageText}
+            data: {data: messageText, isMessage: true}
         });
 
         dialogRef.afterClosed().subscribe(result => {
@@ -230,69 +207,22 @@ export class TableComponent implements OnInit, AfterViewInit, OnDestroy {
         this.theHtmlString = this.HTMLData;
     }
 
-    /*написание только цифр в цене*/
-    getNumericCellEditor() {
-        function isCharNumeric(charStr) {
-            return !!/\d/.test(charStr);
-        }
+    replaceString(str) {
+        return str.toString().replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '');
+    }
 
-        function isKeyPressedNumeric(event) {
-            const charCode = getCharCodeFromEvent(event);
-            const charStr = String.fromCharCode(charCode);
-            return isCharNumeric(charStr);
-        }
-
-        function getCharCodeFromEvent(event) {
-            event = event || window.event;
-            return typeof event.which === 'undefined' ? event.keyCode : event.which;
-        }
-
-        function NumericCellEditor() {
-        }
-
-        NumericCellEditor.prototype.init = function(params) {
-            this.focusAfterAttached = params.cellStartedEdit;
-            this.eInput = document.createElement('input');
-            this.eInput.style.width = '100%';
-            this.eInput.style.height = '100%';
-            this.eInput.value = isCharNumeric(params.charPress) ? params.charPress : params.value;
-            const that = this;
-            this.eInput.addEventListener('keypress', (event) => {
-                if (!isKeyPressedNumeric(event)) {
-                    that.eInput.focus();
-                    if (event.preventDefault) {
-                        event.preventDefault();
-                    }
+    validationAndUpdateField(data) {
+        _.each(data, (prop, index) => {
+            if (prop && prop.toString().length === 0) {
+                data[index] = this.oldData[index];
+            } else {
+                if (index === 'price' && (!prop || !(+prop > 0))) {
+                    data[index] = 0;
+                } else {
+                    data[index] = this.replaceString(prop);
                 }
-            });
-        };
-        NumericCellEditor.prototype.getGui = function() {
-            return this.eInput;
-        };
-        NumericCellEditor.prototype.afterGuiAttached = function() {
-            if (this.focusAfterAttached) {
-                this.eInput.focus();
-                this.eInput.select();
             }
-        };
-        NumericCellEditor.prototype.isCancelBeforeStart = function() {
-            return this.cancelBeforeStart;
-        };
-        NumericCellEditor.prototype.isCancelAfterEnd = () => {
-        };
-        NumericCellEditor.prototype.getValue = function() {
-            return this.eInput.value;
-        };
-        NumericCellEditor.prototype.focusIn = function() {
-            const eInput = this.getGui();
-            eInput.focus();
-            eInput.select();
-            console.log('NumericCellEditor.focusIn()');
-        };
-        NumericCellEditor.prototype.focusOut = () => {
-            console.log('NumericCellEditor.focusOut()');
-        };
-        return NumericCellEditor;
+        });
     }
 
 

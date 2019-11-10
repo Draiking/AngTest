@@ -1,9 +1,7 @@
-
-
-
 <div class="basic-container">
-  <mat-toolbar color="primary">
-    Тестовое задание по Angular
+  <mat-toolbar color="primary" class="d-flex">
+    <p>Тестовое задание по Angular</p>
+    <button mat-raised-button (click)="logout()">Выход</button>
   </mat-toolbar>
   <mat-toolbar class="menu-bar mat-elevation-z1">
     <span *ngFor="let item of navItems">

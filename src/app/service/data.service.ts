@@ -1,6 +1,9 @@
 import {Injectable} from '@angular/core';
-import {TableRowInterface} from './interface/tableRow.interface';
+import {TableRowInterface} from '../interface/tableRow.interface';
 import * as _ from 'lodash';
+import {Observable} from 'rxjs';
+import {environment} from '../../environments/environment';
+import {HttpClient} from '@angular/common/http';
 
 @Injectable({
     providedIn: 'root'
@@ -9,7 +12,13 @@ export class DataService {
 
 
 
-    constructor() {
+    constructor(
+        private http: HttpClient
+    ) {
+    }
+
+    getTable(): Observable<TableRowInterface> {
+        return this.http.get<TableRowInterface>(`${environment.url}bins/15psn9`);
     }
 
     /*эмуляция получние деталей по id*/

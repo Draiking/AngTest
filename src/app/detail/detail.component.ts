@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {TableRowInterface} from '../interface/tableRow.interface';
 import {ActivatedRoute} from '@angular/router';
-import {DataService} from '../data.service';
+import {DataService} from '../service/data.service';
 
 @Component({
     selector: 'app-detail',
@@ -25,7 +25,7 @@ export class DetailComponent implements OnInit {
 
     ngOnInit() {
         if (this.data) {
-            this.car = this.data.table;
+            this.car = this.data;
         } else {
             this.getDataById();
         }

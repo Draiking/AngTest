@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 
 import {TableComponent} from './table/table.component';
 import {DetailComponent} from './detail/detail.component';
+import {AuthGuard} from './service/auth.guard';
 
 const routes: Routes = [
   {
@@ -15,6 +16,7 @@ const routes: Routes = [
   },
   {
     path: 'table',
+    canActivate: [AuthGuard],
     component: TableComponent
   },
   {

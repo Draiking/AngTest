@@ -18,10 +18,11 @@ import {
     MatToolbarModule
 } from '@angular/material';
 import {FormsModule} from '@angular/forms';
-import {DetailModalComponent} from './detail-modal/detail-modal.component';
 import {DetailComponent} from './detail/detail.component';
 import {MenuItemComponent} from './menu-item/menu-item.component';
-import {ErrorMessageComponent} from './error-message/error-message.component';
+import {AuthUserService} from './service/auth-user.service';
+import {AuthGuard} from './service/auth.guard';
+import { MymodalcomponentComponent } from './mymodalcomponent/mymodalcomponent.component';
 
 
 @NgModule({
@@ -29,10 +30,9 @@ import {ErrorMessageComponent} from './error-message/error-message.component';
         AppComponent,
         TableComponent,
         HeaderComponent,
-        DetailModalComponent,
         DetailComponent,
         MenuItemComponent,
-        ErrorMessageComponent,
+        MymodalcomponentComponent,
     ],
     imports: [
         BrowserModule,
@@ -50,11 +50,10 @@ import {ErrorMessageComponent} from './error-message/error-message.component';
         MatMenuModule,
 
     ],
-    providers: [],
+    providers: [AuthUserService, AuthGuard],
     bootstrap: [AppComponent],
     entryComponents: [
-        DetailModalComponent,
-        ErrorMessageComponent
+        MymodalcomponentComponent
     ]
 })
 export class AppModule {

@@ -1,56 +1,57 @@
 <app-header></app-header>
 <div id="container">
-  <p>id моделей присваивается на лету, так как не пришли с бэка</p>
-  <ng-container *ngIf="columnDefs">
-    <ag-grid-angular
-            style="width: 100%; height: 70vh;"
-            class="ag-theme-balham"
-            [rowData]="rowData"
-            [columnDefs]="columnDefs"
-            [pagination]="true"
-            [components]="components"
-            [paginationAutoPageSize]="true"
-            (gridReady)="onGridReady($event)"
-            (cellClicked)="onCellClicked($event)"
-            (cellEditingStopped)="onEditingStop($event)"
-    >
-    </ag-grid-angular>
-    <ng-container *ngIf="current">
-      <div class="row">
-        <div class="col-xl-3">
-          <mat-form-field class="w-100" appearance="outline">
-            <mat-label>make</mat-label>
-            <input matInput [(ngModel)]="current.make">
-          </mat-form-field>
-        </div>
-        <div class="col-xl-3">
-          <mat-form-field class="w-100" appearance="outline">
-            <mat-label>model</mat-label>
-            <input matInput [(ngModel)]="current.model">
-          </mat-form-field>
-        </div>
-        <div class="col-xl-3">
-          <mat-form-field class="w-100" appearance="outline">
-            <mat-label>price</mat-label>
-            <input matInput type="number" [(ngModel)]="current.price">
-          </mat-form-field>
-        </div>
-        <div class="col-xl-3">
-          <button class="w-100 mt16 d-block" (click)="saveTable()" mat-raised-button color="primary">Применить</button>
-        </div>
-      </div>
+    <p>id моделей присваивается на лету, так как не пришли с бэка</p>
+    <ng-container *ngIf="columnDefs">
+        <ag-grid-angular
+                style="width: 100%; height: 70vh;"
+                class="ag-theme-balham"
+                [rowData]="rowData"
+                [columnDefs]="columnDefs"
+                [pagination]="true"
+                [paginationAutoPageSize]="true"
+                (gridReady)="onGridReady($event)"
+                (cellClicked)="onCellClicked($event)"
+                (cellEditingStopped)="onEditingStop($event)"
+        >
+        </ag-grid-angular>
+        <ng-container *ngIf="current">
+            <div class="row">
+                <div class="col-xl-3">
+                    <mat-form-field class="w-100" appearance="outline">
+                        <mat-label>make</mat-label>
+                        <input matInput [(ngModel)]="current.make">
+                    </mat-form-field>
+                </div>
+                <div class="col-xl-3">
+                    <mat-form-field class="w-100" appearance="outline">
+                        <mat-label>model</mat-label>
+                        <input matInput [(ngModel)]="current.model">
+                    </mat-form-field>
+                </div>
+                <div class="col-xl-3">
+                    <mat-form-field class="w-100" appearance="outline">
+                        <mat-label>price</mat-label>
+                        <input matInput type="number" [(ngModel)]="current.price">
+                    </mat-form-field>
+                </div>
+                <div class="col-xl-3">
+                    <button class="w-100 mt16 d-block" (click)="saveTable()" mat-raised-button color="primary">
+                        Применить
+                    </button>
+                </div>
+            </div>
+        </ng-container>
     </ng-container>
-  </ng-container>
 </div>
 
 <div class="wrapper">
-  <ng-container *ngIf="theHtmlString">
-    <div [innerHTML]="theHtmlString"></div>
-  </ng-container>
-  <textarea [(ngModel)]="HTMLData"></textarea> Вставте любую html-разметку.
-  <br>
-  <button class=" mt16" (click)="addHTML()" mat-raised-button color="primary">Добавить Html</button>
-  <br>
+    <ng-container *ngIf="theHtmlString">
+        <div [innerHTML]="theHtmlString"></div>
+    </ng-container>
+    <textarea [(ngModel)]="HTMLData"></textarea> Вставте любую html-разметку.
+    <br>
+    <button class=" mt16" (click)="addHTML()" mat-raised-button color="primary">Добавить Html</button>
+    <br>
 </div>
 <br>
 Для просмотра того же объекта что и в модальном окне перейдите по ссылке ниже.

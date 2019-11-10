@@ -1,0 +1,19 @@
+
+<ng-container *ngIf="!isMessage">
+  <div class="posr">
+  <mat-icon (click)="onNoClick()">close</mat-icon>
+  <app-detail [data]="obj"></app-detail>
+</div>
+</ng-container>
+
+
+
+<ng-container *ngIf="isMessage">
+  <div class="posr">
+  <mat-icon (click)="onNoClick()">close</mat-icon>
+  <p>{{obj}}</p>
+</div>
+</ng-container>
+
+
+
